@@ -1,4 +1,5 @@
 ﻿@page "/todo"
+@using Microsoft.Data.Sqlite
 
 <PageTitle>Todo</PageTitle>
 
@@ -16,18 +17,29 @@
 
 @code {
     private string? newTodo;
-    private string sql;
+    private string? sql;
     private List<TodoItem> todos = new();
 
     private void AddTodo()
     {
-        var envs = Environment.GetEnvironmentVariables();
         if (!string.IsNullOrWhiteSpace(newTodo))
         {
             todos.Add(new TodoItem { Title = newTodo });
-            string? title = envs["title"]?.ToString();
-            sql = $"SELECT * FROM TodoItem WHERE Title = '{title}'";
+            sql = $"SELECT * FROM ToDo where Title = '{newTodo}';";
             newTodo = string.Empty;
+            ExecSQL(sql);
         }
+    }
+
+    private void ExecSQL(string sql)
+    {
+        var conn = new SqliteConnection("Data Source=ToDo.db");
+        conn.Open();
+
+        var cmd = conn.CreateCommand();
+        cmd.CommandText = sql;
+        cmd.ExecuteNonQuery();
+
+        conn.Close();
     }
 }
