@@ -1,5 +1,6 @@
 ﻿@page "/todo"
-@using Microsoft.Data.Sqlite
+@using System.Data;
+@using System.Data.SqlClient;
 
 <PageTitle>Todo</PageTitle>
 
@@ -19,27 +20,26 @@
     private string? newTodo;
     private string? sql;
     private List<TodoItem> todos = new();
-
+    private string connectionString = "Data Source=ToDo.db";
     private void AddTodo()
     {
         if (!string.IsNullOrWhiteSpace(newTodo))
         {
             todos.Add(new TodoItem { Title = newTodo });
-            sql = $"SELECT * FROM ToDo where Title = '{newTodo}';";
+            sql = "SELECT * FROM ToDo where Title = '" + newTodo + "';";
             newTodo = string.Empty;
             ExecSQL(sql);
         }
     }
 
-    private void ExecSQL(string sql)
+    private DataSet ExecSQL(string sql)
     {
-        var conn = new SqliteConnection("Data Source=ToDo.db");
-        conn.Open();
-
-        var cmd = conn.CreateCommand();
-        cmd.CommandText = sql;
-        cmd.ExecuteNonQuery();
-
-        conn.Close();
+        using (var connection = new SqlConnection(connectionString))
+        {
+            var adapter = new SqlDataAdapter(sql, connection);
+            var result = new DataSet();
+            adapter.Fill(result);
+            return result;
+        }
     }
 }
