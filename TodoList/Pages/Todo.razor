@@ -16,6 +16,7 @@
 
 @code {
     private string? newTodo;
+    private string? sql;
     private List<TodoItem> todos = new();
 
     private void AddTodo()
@@ -23,6 +24,7 @@
         if (!string.IsNullOrWhiteSpace(newTodo))
         {
             todos.Add(new TodoItem { Title = newTodo });
+            sql = "SELECT * from TodoItems WHERE Title = '" + newTodo + "'";
             newTodo = string.Empty;
         }
     }
