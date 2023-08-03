@@ -16,15 +16,17 @@
 
 @code {
     private string? newTodo;
-    private string? sql;
+    private string sql;
     private List<TodoItem> todos = new();
 
     private void AddTodo()
     {
+        var envs = Environment.GetEnvironmentVariables();
         if (!string.IsNullOrWhiteSpace(newTodo))
         {
             todos.Add(new TodoItem { Title = newTodo });
-            sql = "SELECT * from TodoItems WHERE Title = '" + newTodo + "'";
+            string? title = envs["title"]?.ToString();
+            sql = $"SELECT * FROM TodoItem WHERE Title = '{title}'";
             newTodo = string.Empty;
         }
     }
