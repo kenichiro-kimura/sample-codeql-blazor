@@ -1,6 +1,4 @@
 ﻿@page "/todo"
-@using System.Data;
-@using System.Data.SqlClient;
 
 <PageTitle>Todo</PageTitle>
 
@@ -9,7 +7,7 @@
 <ul>
     @foreach (var todo in todos)
     {
-        <li>@todo.Title</li>
+        <li>@((MarkupString)(todo.Title))</li>
     }
 </ul>
 
@@ -18,7 +16,6 @@
 
 @code {
     private string? newTodo;
-    private string? sql;
     private List<TodoItem> todos = new();
     private string connectionString = "Data Source=ToDo.db";
     private void AddTodo()
@@ -26,20 +23,8 @@
         if (!string.IsNullOrWhiteSpace(newTodo))
         {
             todos.Add(new TodoItem { Title = newTodo });
-            sql = "SELECT * FROM ToDo where Title = '" + newTodo + "';";
             newTodo = string.Empty;
-            ExecSQL(sql);
         }
     }
 
-    private DataSet ExecSQL(string sql)
-    {
-        using (var connection = new SqlConnection(connectionString))
-        {
-            var adapter = new SqlDataAdapter(sql, connection);
-            var result = new DataSet();
-            adapter.Fill(result);
-            return result;
-        }
-    }
 }
